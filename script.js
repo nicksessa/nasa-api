@@ -44,8 +44,13 @@ function createDOMNodes(page) {
     // save text
     const saveText = document.createElement("p");
     saveText.classList.add("clickable");
-    saveText.textContent = "Add to Favorites";
-    saveText.setAttribute("onclick", `saveFavorite('${result.url}')`);
+    if (page === "results") {
+      saveText.textContent = "Add to Favorites";
+      saveText.setAttribute("onclick", `saveFavorite('${result.url}')`);
+    } else {
+      saveText.textContent = "Remove Favorite";
+      saveText.setAttribute("onclick", `removeFavorite('${result.url}')`);
+    }
     // Card text
     const cardText = document.createElement("p");
     cardText.textContent = result.explanation;
@@ -76,6 +81,7 @@ function updateDOM(page) {
     favorites = JSON.parse(localStorage.getItem("nasaFavorites"));
     console.log("favorites from local storage: ", favorites);
   }
+  imagesContainer.textContent = "";
   createDOMNodes(page);
 }
 
@@ -108,6 +114,16 @@ function saveFavorite(itemUrl) {
       localStorage.setItem("nasaFavorites", JSON.stringify(favorites));
     }
   });
+}
+
+// remove item from favorite
+function removeFavorite(itemUrl) {
+  if (favorites[itemUrl]) {
+    delete favorites[itemUrl];
+    // set favorites in localStorage
+    localStorage.setItem("nasaFavorites", JSON.stringify(favorites));
+    updateDOM("favorites");
+  }
 }
 
 // on load
