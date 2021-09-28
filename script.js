@@ -13,8 +13,13 @@ const apiUrl = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&count=${co
 let resultsArray = [];
 let favorites = {};
 
-function updateDOM() {
-  resultsArray.forEach((result) => {
+function createDOMNodes(page) {
+  // Use Object.values(favorites) to get the values in the favorites object and converts it to an array
+  const currentArray =
+    page === "results" ? resultsArray : Object.values(favorites);
+  console.log("current Array", page, currentArray);
+
+  currentArray.forEach((result) => {
     // Car Container
     const card = document.createElement("div");
     card.classList.add("card");
@@ -65,13 +70,22 @@ function updateDOM() {
   });
 }
 
+function updateDOM(page) {
+  // get favorites from local storage
+  if (localStorage.getItem("nasaFavorites")) {
+    favorites = JSON.parse(localStorage.getItem("nasaFavorites"));
+    console.log("favorites from local storage: ", favorites);
+  }
+  createDOMNodes(page);
+}
+
 // Get Images from NASA API
 async function getNasaPictures() {
   try {
     const response = await fetch(apiUrl);
     resultsArray = await response.json();
-    console.log(resultsArray);
-    updateDOM();
+    //console.log(resultsArray);
+    updateDOM("favorites");
   } catch (error) {
     // Catch error here
   }
